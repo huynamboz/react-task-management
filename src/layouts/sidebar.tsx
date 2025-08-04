@@ -1,3 +1,5 @@
+import { Link, useLocation } from "react-router-dom";
+
 type SidebarProps = {
   isCollapsed: boolean;
   toggleSidebar: () => void;
@@ -7,6 +9,7 @@ export const Sidebar = ({
   isCollapsed,
   toggleSidebar
 }: SidebarProps) => {
+  const location = useLocation();
 
   return (
     <aside className={`${isCollapsed ? 'w-12' : 'w-64'} flex flex-col justify-between bg-gray-50 h-full text-gray-900 transition-all duration-200 ease-linear relative border-gray-200`}>
@@ -43,7 +46,7 @@ export const Sidebar = ({
           <div className="w-full text-sm">
             <ul className="flex w-full min-w-0 flex-col gap-1">
               <li className="group/menu-item relative">
-                <button className="peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left outline-none transition-colors hover:bg-gray-100 bg-gray-100 font-medium h-8 text-sm">
+                <Link to="/" className={`peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left outline-none transition-colors hover:bg-gray-100 h-8 text-sm ${location.pathname === '/' ? 'bg-gray-100 font-medium' : ''}`}>
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12h.01M3 18h.01M3 6h.01M8 12h13M8 18h13M8 6h13" />
                   </svg>
@@ -53,10 +56,10 @@ export const Sidebar = ({
                       12
                     </span>
                   )}
-                </button>
+                </Link>
               </li>
               <li className="group/menu-item relative">
-                <button className="peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left outline-none transition-colors hover:bg-gray-100 h-8 text-sm">
+                <Link to="/sprints" className={`peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left outline-none transition-colors hover:bg-gray-100 h-8 text-sm ${location.pathname === '/sprints' ? 'bg-gray-100 font-medium' : ''}`}>
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 5v11M12 5v6M18 5v14" />
                   </svg>
@@ -66,10 +69,10 @@ export const Sidebar = ({
                       8
                     </span>
                   )}
-                </button>
+                </Link>
               </li>
               <li className="group/menu-item relative">
-                <button className="peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left outline-none transition-colors hover:bg-gray-100 h-8 text-sm">
+                <Link to="/timeline" className={`peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left outline-none transition-colors hover:bg-gray-100 h-8 text-sm ${location.pathname === '/timeline' ? 'bg-gray-100 font-medium' : ''}`}>
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 2v4M16 2v4M3 4h18v16a2 2 0 01-2 2H5a2 2 0 01-2-2V4zM3 10h18" />
                   </svg>
@@ -79,7 +82,7 @@ export const Sidebar = ({
                       3
                     </span>
                   )}
-                </button>
+                </Link>
               </li>
             </ul>
           </div>
