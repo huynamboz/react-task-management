@@ -9,10 +9,24 @@ import {
 } from "@tabler/icons-react";
 import { UserStoryList } from "./user-story-list";
 import { useState } from "react";
+import { CircleCheckBig } from "lucide-react";
+import type { Sprint } from "../types/backlog-types";
 
-export const SprintItem = () => {
+type SprintItemProps = {
+  sprint: Sprint
+}
+export const SprintItem = ({ sprint }: SprintItemProps) => {
   const [isShowUserStories, setIsShowUserStories] = useState(false);
+  const [isSprintStarted, setIsSprintStarted] = useState(false);
+  const [isSprintCompleted, setIsSprintCompleted] = useState(false);
 
+  const markSprintAsCompleted = () => {
+    setIsSprintCompleted(true);
+  };
+
+  const toggleSprint = () => {
+    setIsSprintStarted(!isSprintStarted);
+  };
   const toggleUserStories = () => {
     setIsShowUserStories(!isShowUserStories);
   };
@@ -32,25 +46,25 @@ export const SprintItem = () => {
           <div>
             <div className="flex items-center gap-2">
               <p className="font-semibold">
-                Sprint 1 - Authentication & Dashboard
+                {sprint.title}
               </p>
               <Badge
                 variant="secondary"
-                className="bg-blue-100 text-blue-800 dark:bg-blue-600"
+                className={`${isSprintCompleted ? "bg-slate-100 text-slate-600" : "bg-blue-100 text-blue-800 hover:bg-opacity-90"}`}
               >
-                Planning
+                {isSprintCompleted ? "Completed" : "Planning"}
               </Badge>
             </div>
 
             <div className="mt-1 flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <IconCalendarEvent size={18} />
-                <p>2/1/2024 - 2/14/2024</p>
+                <p>{sprint.startDate} - {sprint.endDate}</p>
               </div>
 
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <IconBook size={18} />
-                <p>1 stories</p>
+                <p>{sprint.userStories.length} stories</p>
               </div>
             </div>
           </div>
@@ -58,10 +72,19 @@ export const SprintItem = () => {
 
         {/* Left */}
         <div>
-          <Button className="mr-2">
-            <IconPlayerPlay />
-            Start Sprint
-          </Button>
+          {!isSprintStarted && (
+            <Button className="mr-2 h-8" onClick={toggleSprint}>
+              <IconPlayerPlay />
+              Start Sprint
+            </Button>
+          )}
+
+           {isSprintStarted && !isSprintCompleted && (
+            <Button variant="outline" className="mr-2 h-8" onClick={markSprintAsCompleted}>
+              <CircleCheckBig />
+              Complete Sprint
+            </Button>
+          )}
 
           <Button variant="ghost">
             <IconDots />
@@ -72,7 +95,7 @@ export const SprintItem = () => {
       {/* User Stories Section */}
       {isShowUserStories && (
         <div className="pt-8 pl-12 pr-4">
-          <UserStoryList />
+          <UserStoryList userStories={sprint.userStories} />
         </div>
       )}
     </div>
