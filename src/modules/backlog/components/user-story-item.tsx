@@ -71,10 +71,10 @@ export const UserStoryItem = () => {
 
             <div className="space-y-2 pl-4">
               {/* Task 1 */}
-              <Card className="border border-gray-200">
-                <CardHeader className="pb-1 text-sm px-3">
+              <Card draggable className="border border-gray-200">
+                <CardHeader className="pb-1 text-sm px-1">
                   <div className="flex items-center gap-2">
-                    <GripVertical className="w-4 h-4 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <GripVertical className="size-3 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div>
                       <h3 className="font-semibold text-gray-900">
                         Implement JWT authentication
@@ -97,10 +97,10 @@ export const UserStoryItem = () => {
               </Card>
 
               {/* Task 2 */}
-              <Card className="border border-gray-200">
-                <CardHeader className="pb-1 text-sm px-3">
+              <Card draggable className="border border-gray-200">
+                <CardHeader className="pb-1 text-sm px-1">
                   <div className="flex items-center gap-2">
-                    <GripVertical className="w-4 h-4 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <GripVertical className="size-3 text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div>
                       <h3 className="font-semibold text-gray-900">
                         Implement JWT authentication
