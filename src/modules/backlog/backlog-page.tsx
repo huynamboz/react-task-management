@@ -1,24 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { IconPlus } from "@tabler/icons-react";
+import { FilterBox } from "./components/fillter-box";
+import { SprintList } from "./components/sprint-list";
 
 export const BacklogPage = () => {
   return (
-    <div className="">
+    <div>
       {/* header */}
-      <div className="px-6 flex items-center justify-between mt-1">
+      <div className="px-6 flex items-center justify-between mt-2">
         <div>
           <h1 className="text-2xl font-bold">Backlog</h1>
-          <p className="mt-2 text-base text-gray-500">
+          <p className="text-base text-gray-500">
             Manage user stories, sprints and tasks
           </p>
         </div>
@@ -39,47 +32,16 @@ export const BacklogPage = () => {
       </div>
 
       {/* Filter box */}
-      <div className="px-6 mt-4 flex items-center gap-4">
-        <Input
-          type="text"
-          placeholder="Search user stories"
-          className="max-w-sm"
-        />
-
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a fruit" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Fruits</SelectLabel>
-              <SelectItem value="apple">Apple</SelectItem>
-              <SelectItem value="banana">Banana</SelectItem>
-              <SelectItem value="blueberry">Blueberry</SelectItem>
-              <SelectItem value="grapes">Grapes</SelectItem>
-              <SelectItem value="pineapple">Pineapple</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select a fruit" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Fruits</SelectLabel>
-              <SelectItem value="apple">Apple</SelectItem>
-              <SelectItem value="banana">Banana</SelectItem>
-              <SelectItem value="blueberry">Blueberry</SelectItem>
-              <SelectItem value="grapes">Grapes</SelectItem>
-              <SelectItem value="pineapple">Pineapple</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+      <div className="px-6 mt-4">
+        <FilterBox />
       </div>
 
-      <div className="border-b mt-5"></div>
+      <div className="border-b mt-6"></div>
+
+      {/* Content */}
+      <div className="px-6 mt-6">
+        <SprintList />
+      </div>
     </div>
   );
 };
