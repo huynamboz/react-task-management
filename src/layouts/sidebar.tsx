@@ -72,7 +72,7 @@ export const Sidebar = ({
                 </Link>
               </li>
               <li className="group/menu-item relative">
-                <Link to="/timeline" className={`peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left outline-none transition-colors hover:bg-gray-100 h-8 text-sm ${location.pathname === '/timeline' ? 'bg-gray-100 font-medium' : ''}`}>
+                <Link to="/timelines" className={`peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left outline-none transition-colors hover:bg-gray-100 h-8 text-sm ${location.pathname === '/timeline' ? 'bg-gray-100 font-medium' : ''}`}>
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 2v4M16 2v4M3 4h18v16a2 2 0 01-2 2H5a2 2 0 01-2-2V4zM3 10h18" />
                   </svg>
