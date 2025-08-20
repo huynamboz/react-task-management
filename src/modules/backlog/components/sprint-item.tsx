@@ -10,7 +10,7 @@ import {
 import { UserStoryList } from "./user-story-list";
 import { useState } from "react";
 import { CircleCheckBig } from "lucide-react";
-import type { Sprint } from "../types/backlog-types";
+import type { Sprint } from "@/store/types";
 
 type SprintItemProps = {
   sprint: Sprint
@@ -19,6 +19,8 @@ export const SprintItem = ({ sprint }: SprintItemProps) => {
   const [isShowUserStories, setIsShowUserStories] = useState(false);
   const [isSprintStarted, setIsSprintStarted] = useState(false);
   const [isSprintCompleted, setIsSprintCompleted] = useState(false);
+
+  // 
 
   const markSprintAsCompleted = () => {
     setIsSprintCompleted(true);
@@ -46,7 +48,7 @@ export const SprintItem = ({ sprint }: SprintItemProps) => {
           <div>
             <div className="flex items-center gap-2">
               <p className="font-semibold">
-                {sprint.title}
+                {sprint.name}
               </p>
               <Badge
                 variant="secondary"
@@ -59,12 +61,12 @@ export const SprintItem = ({ sprint }: SprintItemProps) => {
             <div className="mt-1 flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <IconCalendarEvent size={18} />
-                <p>{sprint.startDate} - {sprint.endDate}</p>
+                <p>{sprint.start_date} - {sprint.end_date}</p>
               </div>
 
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <IconBook size={18} />
-                <p>{sprint.userStories.length} stories</p>
+                <p>{sprint.user_story_total} stories</p>
               </div>
             </div>
           </div>
@@ -95,7 +97,7 @@ export const SprintItem = ({ sprint }: SprintItemProps) => {
       {/* User Stories Section */}
       {isShowUserStories && (
         <div className="pt-8 pl-12 pr-4">
-          <UserStoryList userStories={sprint.userStories} />
+          <UserStoryList sprintId={sprint.id} />
         </div>
       )}
     </div>

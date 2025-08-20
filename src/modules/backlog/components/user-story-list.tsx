@@ -1,11 +1,14 @@
-import type { UserStory } from "../types/backlog-types";
+import { useProjectState } from "@/store/hooks";
 import { UserStoryItem } from "./user-story-item";
 
 type UserStoryListProps = {
-  userStories: UserStory[]
+  sprintId: string
 }
 
-export const UserStoryList = ({ userStories }: UserStoryListProps) => {
+export const UserStoryList = ({ sprintId }: UserStoryListProps) => {
+  const state = useProjectState();
+  const userStories = state.userStories.get(sprintId) || [];
+
   return (
     <div>
       <div className="flex flex-col gap-6">

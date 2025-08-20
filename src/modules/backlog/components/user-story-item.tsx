@@ -2,12 +2,16 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader } from "@/components/ui/card";
 import { IconBook } from "@tabler/icons-react";
 import { GripVertical, Target } from "lucide-react";
-import type { Task, UserStory } from "../types/backlog-types";
+import type { Task, UserStory } from "@/store/types";
+import { useProjectState } from "@/store/hooks";
 
 type UserStoryItemProps = {
   userStory: UserStory
 };
 export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
+  const state = useProjectState();
+  const tasks = state.tasks.get(userStory.id) || [];
+  console.log(tasks);
   return (
     <div draggable className="group border rounded-2xl shadow-sm bg-white">
       <div className="flex items-center gap-2 border-l-3 rounded-tl-2xl rounded-bl-2xl p-4 border-gray-200 pr-4">
@@ -15,7 +19,7 @@ export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
           <GripVertical size={16} color="gray" />
         </div>
 
-        <div className="py-2">
+        <div className="py-2 w-full">
           {/* Header Section */}
           <div className="flex items-center gap-3">
             <IconBook className="w-5 h-5 text-gray-600" />
@@ -50,12 +54,12 @@ export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
 
             <div className="flex items-center text-sm gap-4 text-gray-600">
               {/* <span>{userStory.assignee}</span> */}
-              <span>{userStory.tasks.length} tasks</span>
+              <span>{tasks.length} tasks</span>
             </div>
 
             {/* Tags */}
             <div className="flex gap-2 mt-8 border-b pb-5">
-              {userStory.tags?.map((tag, index) => (
+              {/* {userStory.tags?.map((tag, index) => (
                 <Badge
                   key={index}
                   variant="outline"
@@ -63,7 +67,7 @@ export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
                 >
                   {tag}
                 </Badge>
-              ))}
+              ))} */}
             </div>
           </div>
 
@@ -71,7 +75,7 @@ export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
           <div className="space-y-2 mt-4">
             <div className="flex items-center gap-2 text-gray-600">
               <Target className="w-4 h-4" />
-              <h2 className="text-sm font-medium">Tasks ({userStory.tasks.length})</h2>
+              <h2 className="text-sm font-medium">Tasks ({tasks.length})</h2>
             </div>
 
             <div className="space-y-2 pl-4">
@@ -101,7 +105,7 @@ export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
                 </CardHeader>
               </Card> */}
 
-              {userStory.tasks.map((task: Task) => (
+              {tasks.map((task: Task) => (
                 <Card
                   key={task.id}
                   draggable
