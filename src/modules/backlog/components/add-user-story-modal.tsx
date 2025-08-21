@@ -5,42 +5,74 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useForm, Controller } from "react-hook-form";
-import { useProjectStore, type UserStory } from "@/store";
+import { useProjectStore } from "@/store";
 import { axiosClient } from "@/shared/query-client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface AddUserStoryModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
+const priorityOptions = [
+  {
+      "id": "ecfeb151-8c79-4a2f-8c1f-a861798ad956",
+      "businessId": "US-001",
+      "name": "Low",
+      "level": 0
+  },
+  {
+      "id": "41f77833-5c96-448d-8dd9-34b30a0ea940",
+      "businessId": "US-001",
+      "name": "Medium",
+      "level": 1
+  },
+  {
+      "id": "60fea3ca-b021-40ff-aa37-312acc15c389",
+      "businessId": "US-001",
+      "name": "High",
+      "level": 2
+  }
+]
 type FormValues = {
   title: string;
   description: string;
   acceptanceCriteria: string;
-  priority: "low" | "medium" | "high";
-  storyPoints: string;
-  productOwner: string;
+  priorityId: string;
+  point: string;
   sprintId: string;
   tags: string;
 };
 
 export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) => {
+  const queryClient = useQueryClient();
+  
   const createUserStory = useMutation({
-    mutationFn: async (userStory: Omit<UserStory, 'id'>) => {
+    mutationFn: async (userStory: {
+      title: string;
+      description: string;
+      priorityId: string;
+      point: number;
+      sprintId: string | null;
+      tags: string[];
+    }) => {
       const response = await axiosClient.post('/user-stories', userStory);
       return response.data;
     },
+    onSuccess: () => {
+      // Invalidate and refetch user stories after creating
+      queryClient.invalidateQueries({ queryKey: ['userStories'] });
+    },
   }); 
+  
   const { sprints } = useProjectStore();
   const { register, handleSubmit, reset, control } = useForm<FormValues>({
     defaultValues: {
       title: "",
       description: "",
       acceptanceCriteria: "",
-      priority: "medium",
-      storyPoints: "",
-      productOwner: "",
+      priorityId: "medium",
+      point: "",
       sprintId: "",
       tags: "",
     },
@@ -50,19 +82,21 @@ export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) =
     if (!data.title || !data.description) return;
 
     const newUserStory = {
-      id: `us${Date.now()}`,
-      sprintId: data.sprintId || "backlog",
       title: data.title,
       description: data.description,
-      priority: data.priority,
-      points: parseInt(data.storyPoints) || 0,
-      creator: data.productOwner || "Unknown",
+      priorityId: data.priorityId,
+      point: parseInt(data.point) || 0,
+      sprintId: data.sprintId || null,
+      tags: data.tags ? data.tags.split(',').map(tag => tag.trim()) : [],
     };
 
-    await createUserStory.mutateAsync(newUserStory);
-
-    reset();
-    onClose();
+    try {
+      await createUserStory.mutateAsync(newUserStory);
+      reset();
+      onClose();
+    } catch (error) {
+      console.error('Failed to create user story:', error);
+    }
   };
 
   const handleCancel = () => {
@@ -123,9 +157,9 @@ export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) =
           {/* Priority and Story Points */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="priority">Priority</Label>
+              <Label htmlFor="priorityId">Priority</Label>
               <Controller
-                name="priority"
+                name="priorityId"
                 control={control}
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
@@ -133,9 +167,11 @@ export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) =
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
+                      {priorityOptions.map((priority) => (
+                        <SelectItem key={priority.id} value={priority.id}>
+                          {priority.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 )}
@@ -143,9 +179,9 @@ export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) =
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="storyPoints">Story Points</Label>
+              <Label htmlFor="point">Story Points</Label>
               <Controller
-                name="storyPoints"
+                name="point"
                 control={control}
                 render={({ field }) => (
                   <Select value={field.value} onValueChange={field.onChange}>
@@ -167,49 +203,27 @@ export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) =
             </div>
           </div>
 
-          {/* Product Owner and Sprint */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="productOwner">Product Owner</Label>
-              <Controller
-                name="productOwner"
-                control={control}
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select owner" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="John Doe">John Doe</SelectItem>
-                      <SelectItem value="Jane Smith">Jane Smith</SelectItem>
-                      <SelectItem value="Bob Johnson">Bob Johnson</SelectItem>
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="sprintId">Sprint</Label>
-              <Controller
-                name="sprintId"
-                control={control}
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Backlog (No Sprint)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {sprints.map((sprint) => (
-                        <SelectItem key={sprint.id} value={sprint.id}>
-                          {sprint.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
+          {/* Sprint Selection */}
+          <div className="space-y-2">
+            <Label htmlFor="sprintId">Sprint</Label>
+            <Controller
+              name="sprintId"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Backlog (No Sprint)" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sprints.map((sprint) => (
+                      <SelectItem key={sprint.id} value={sprint.id}>
+                        {sprint.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
           </div>
 
           {/* Tags */}
@@ -217,7 +231,7 @@ export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) =
             <Label htmlFor="tags">Tags</Label>
             <Input
               id="tags"
-              placeholder="Add a tag..."
+              placeholder="authentication, frontend, urgent (comma separated)"
               {...register("tags")}
             />
           </div>
@@ -227,7 +241,9 @@ export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) =
             <Button type="button" variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button type="submit">Create User Story</Button>
+            <Button type="submit" disabled={createUserStory.isPending}>
+              {createUserStory.isPending ? 'Creating...' : 'Create User Story'}
+            </Button>
           </div>
         </form>
       </DialogContent>

@@ -8,6 +8,18 @@ export type Sprint = {
 
 export type UserStory = {
   id: string;
+  title: string;
+  description: string;
+  priorityId: string;
+  point: number;
+  sprintId: string | null;
+  tags: string[];
+  creator?: string;
+};
+
+// Legacy type for backward compatibility
+export type LegacyUserStory = {
+  id: string;
   sprintId: string;
   title: string;
   description: string;
@@ -43,6 +55,7 @@ export type State = {
 export type Action =
   | { type: "SET_SPRINTS"; payload: Sprint[] }
   | { type: "SET_USER_STORIES"; payload: { sprintId: string; userStories: UserStory[] }[] }
+  | { type: "SET_USER_STORIES_BY_SPRINT_ID"; payload: { sprintId: string; userStories: UserStory[] } }
   | { type: "SET_TASKS"; payload: { userStoryId: string; tasks: Task[] }[] }
   | { type: "SELECT_SPRINT"; payload: string | null }
   | { type: "SELECT_USER_STORY"; payload: string | null }

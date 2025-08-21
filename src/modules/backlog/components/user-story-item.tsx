@@ -26,17 +26,17 @@ export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
             <Badge
               variant="secondary"
               className={`hover:bg-orange-100 ${
-                userStory.priority === 'high'
+                userStory.priorityId === 'high'
                   ? 'bg-red-100 text-red-800'
-                  : userStory.priority === 'medium'
+                  : userStory.priorityId === 'medium'
                   ? 'bg-yellow-100 text-yellow-800'
                   : 'bg-green-100 text-green-800'
               }`}
             >
-              {userStory.priority}
+              {userStory.priorityId}
             </Badge>
             <Badge variant="outline" className="text-gray-600">
-              {userStory.points} pts
+              {userStory.point} pts
             </Badge>
           </div>
 

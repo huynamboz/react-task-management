@@ -14,6 +14,12 @@ export function projectReducer(state: State, action: Action): State {
         userStories: new Map(action.payload.map(({ sprintId, userStories }) => [sprintId, userStories])),
       };
 
+    case "SET_USER_STORIES_BY_SPRINT_ID":
+      return {
+        ...state,
+        userStories: new Map(state.userStories).set(action.payload.sprintId, action.payload.userStories),
+      };
+
     case "SET_TASKS":
       return {
         ...state,
