@@ -14,7 +14,7 @@ interface AddUserStoryModalProps {
   onClose: () => void;
 }
 
-const priorityOptions = [
+export const priorityOptions = [
   {
       "id": "ecfeb151-8c79-4a2f-8c1f-a861798ad956",
       "businessId": "US-001",

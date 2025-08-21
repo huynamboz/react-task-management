@@ -5,6 +5,7 @@ import { FilterBox } from "./components/fillter-box";
 import { SprintList } from "./components/sprint-list";
 import { AddSprintModal } from "./components/add-sprint-modal";
 import { AddUserStoryModal } from "./components/add-user-story-modal";
+import { AddTaskModal } from "./components/add-task-modal";
 import { useEffect, useState } from "react";
 import { useProjectStore } from "@/store";
 import { axiosClient } from "@/shared/query-client";
@@ -15,6 +16,7 @@ export const BacklogPage = () => {
   // const { state } = useProjectStore();
   const [isAddSprintModalOpen, setIsAddSprintModalOpen] = useState(false);
   const [isAddUserStoryModalOpen, setIsAddUserStoryModalOpen] = useState(false);
+  const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
   // Load sample data on component mount
   // useEffect(() => {
   //   if (state.sprints.size === 0) {
@@ -154,7 +156,11 @@ export const BacklogPage = () => {
             <IconPlus className="mr-2" />
             Create Sprint
           </Button>
-          <Button variant="outline" className="px-4 py-2rounded-md">
+          <Button 
+            variant="outline" 
+            className="px-4 py-2rounded-md"
+            onClick={() => setIsAddTaskModalOpen(true)}
+          >
             <IconPlus className="mr-2" />
             Add Task
           </Button>
@@ -184,6 +190,10 @@ export const BacklogPage = () => {
       <AddSprintModal 
         isOpen={isAddSprintModalOpen} 
         onClose={() => setIsAddSprintModalOpen(false)} 
+      />
+      <AddTaskModal 
+        isOpen={isAddTaskModalOpen} 
+        onClose={() => setIsAddTaskModalOpen(false)} 
       />
       <AddUserStoryModal 
         isOpen={isAddUserStoryModalOpen} 

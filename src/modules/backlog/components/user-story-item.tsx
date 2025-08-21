@@ -1,9 +1,13 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { IconBook } from "@tabler/icons-react";
-import { GripVertical, Target } from "lucide-react";
+import { GripVertical, Target, Plus } from "lucide-react";
 import type { Task, UserStory } from "@/store/types";
 import { useProjectStore } from "@/store";
+import { priorityOptions } from "./add-user-story-modal";
+import { useState } from "react";
+import { AddTaskModal } from "./add-task-modal";
 
 type UserStoryItemProps = {
   userStory: UserStory
@@ -11,6 +15,7 @@ type UserStoryItemProps = {
 export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
   const { tasks } = useProjectStore();
   const tasksByUserStoryId = tasks.get(userStory.id) || [];
+  const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
 
   return (
     <div draggable className="group border rounded-2xl shadow-sm bg-white">
@@ -26,14 +31,14 @@ export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
             <Badge
               variant="secondary"
               className={`hover:bg-orange-100 ${
-                userStory.priorityId === 'high'
+                priorityOptions.find(p => p.id === userStory.priorityId)?.name === 'high'
                   ? 'bg-red-100 text-red-800'
-                  : userStory.priorityId === 'medium'
+                  : priorityOptions.find(p => p.id === userStory.priorityId)?.name === 'medium'
                   ? 'bg-yellow-100 text-yellow-800'
                   : 'bg-green-100 text-green-800'
               }`}
             >
-              {userStory.priorityId}
+              {priorityOptions.find(p => p.id === userStory.priorityId)?.name}
             </Badge>
             <Badge variant="outline" className="text-gray-600">
               {userStory.point} pts
@@ -73,9 +78,20 @@ export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
 
           {/* Tasks Section */}
           <div className="space-y-2 mt-4">
-            <div className="flex items-center gap-2 text-gray-600">
-              <Target className="w-4 h-4" />
-              <h2 className="text-sm font-medium">Tasks ({tasksByUserStoryId.length})</h2>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-gray-600">
+                <Target className="w-4 h-4" />
+                <h2 className="text-sm font-medium">Tasks ({tasksByUserStoryId.length})</h2>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsAddTaskModalOpen(true)}
+                className="text-xs"
+              >
+                <Plus className="w-3 h-3 mr-1" />
+                Add Task
+              </Button>
             </div>
 
             <div className="space-y-2 pl-4">
@@ -145,6 +161,12 @@ export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
           </div>
         </div>
       </div>
+      
+      <AddTaskModal 
+        isOpen={isAddTaskModalOpen} 
+        onClose={() => setIsAddTaskModalOpen(false)}
+        userStoryId={userStory.id}
+      />
     </div>
   );
 };
