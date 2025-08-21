@@ -1,9 +1,9 @@
 export type Sprint = {
   id: string;
   name: string;
-  start_date: string;
-  end_date: string;
-  user_story_total: number;
+  startDate: string;
+  endDate: string;
+  userStoryTotal: number;
 };
 
 export type UserStory = {
@@ -27,7 +27,7 @@ export type Task = {
 
 export type State = {
   sprints: Map<string, Sprint>;
-  userStories: Map<string, UserStory[]>; // Grouped by sprintId
+  userStories: Map<string, UserStory[]>;
   tasks: Map<string, Task[]>;
   filters: {
     search: string;

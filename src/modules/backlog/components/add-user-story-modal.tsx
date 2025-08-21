@@ -3,9 +3,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useProjectDispatch, useProjectState } from "@/store/hooks";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useForm, Controller } from "react-hook-form";
+import { useProjectStore, type UserStory } from "@/store";
+import { axiosClient } from "@/shared/query-client";
+import { useMutation } from "@tanstack/react-query";
 
 interface AddUserStoryModalProps {
   isOpen: boolean;
@@ -24,9 +26,13 @@ type FormValues = {
 };
 
 export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) => {
-  const dispatch = useProjectDispatch();
-  const state = useProjectState();
-
+  const createUserStory = useMutation({
+    mutationFn: async (userStory: Omit<UserStory, 'id'>) => {
+      const response = await axiosClient.post('/user-stories', userStory);
+      return response.data;
+    },
+  }); 
+  const { sprints } = useProjectStore();
   const { register, handleSubmit, reset, control } = useForm<FormValues>({
     defaultValues: {
       title: "",
@@ -40,7 +46,7 @@ export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) =
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     if (!data.title || !data.description) return;
 
     const newUserStory = {
@@ -53,13 +59,7 @@ export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) =
       creator: data.productOwner || "Unknown",
     };
 
-    dispatch({
-      type: "ADD_USER_STORY",
-      payload: {
-        sprintId: data.sprintId || "backlog",
-        userStory: newUserStory,
-      },
-    });
+    await createUserStory.mutateAsync(newUserStory);
 
     reset();
     onClose();
@@ -200,7 +200,7 @@ export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) =
                       <SelectValue placeholder="Backlog (No Sprint)" />
                     </SelectTrigger>
                     <SelectContent>
-                      {Array.from(state.sprints.values()).map((sprint) => (
+                      {sprints.map((sprint) => (
                         <SelectItem key={sprint.id} value={sprint.id}>
                           {sprint.name}
                         </SelectItem>

@@ -9,8 +9,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { IconCalendar } from "@tabler/icons-react";
-import { useProjectDispatch } from "@/store/hooks";
+import { useProjectStore, type Sprint } from "@/store";
 import { useForm } from "react-hook-form";
+import { axiosClient, queryClient } from "@/shared/query-client";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 interface AddSprintModalProps {
   isOpen: boolean;
@@ -25,7 +27,26 @@ type FormValues = {
 };
 
 export const AddSprintModal = ({ isOpen, onClose }: AddSprintModalProps) => {
-  const dispatch = useProjectDispatch();
+  const { dispatch } = useProjectStore();
+
+  const createSprint = useMutation({
+    mutationFn: async (sprint: Omit<Sprint, 'id'>) => {
+      const response = await axiosClient.post('/sprints', sprint);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['sprints'] });
+    },
+  });
+
+  const getSprints = useQuery({
+    queryKey: ['sprints'],
+    queryFn: async () => {
+      const response = await axiosClient.get('/sprints');
+      return response.data;
+    },
+    enabled: false,
+  });
 
   const { register, handleSubmit, reset } = useForm<FormValues>({
     defaultValues: {
@@ -36,21 +57,31 @@ export const AddSprintModal = ({ isOpen, onClose }: AddSprintModalProps) => {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     if (!data.name || !data.startDate || !data.endDate) return;
 
     const newSprint = {
-      id: `sprint${Date.now()}`,
       name: data.name,
-      start_date: data.startDate,
-      end_date: data.endDate,
-      user_story_total: 0,
+      startDate: data.startDate,
+      goal: data.goal,
+      endDate: data.endDate,
+      userStoryTotal: 0,
     };
 
-    dispatch({ type: "ADD_SPRINT", payload: newSprint });
-
-    reset();
-    onClose();
+    try {
+      await createSprint.mutateAsync(newSprint);
+      const result = await getSprints.refetch();
+      if (result.data) {
+        dispatch({
+          type: 'SET_SPRINTS',
+          payload: result.data
+        });
+      }
+      reset();
+      onClose();
+    } catch (error) {
+      console.error('Failed to create sprint:', error);
+    }
   };
 
   const handleCancel = () => {
@@ -131,7 +162,9 @@ export const AddSprintModal = ({ isOpen, onClose }: AddSprintModalProps) => {
             <Button type="button" variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button type="submit">Create Sprint</Button>
+            <Button type="submit" disabled={createSprint.isPending}>
+              {createSprint.isPending ? 'Creating...' : 'Create Sprint'}
+            </Button>
           </div>
         </form>
       </DialogContent>

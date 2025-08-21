@@ -61,12 +61,12 @@ export const SprintItem = ({ sprint }: SprintItemProps) => {
             <div className="mt-1 flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <IconCalendarEvent size={18} />
-                <p>{sprint.start_date} - {sprint.end_date}</p>
+                <p>{sprint.startDate} - {sprint.endDate}</p>
               </div>
 
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <IconBook size={18} />
-                <p>{sprint.user_story_total} stories</p>
+                <p>{sprint.userStoryTotal} stories</p>
               </div>
             </div>
           </div>

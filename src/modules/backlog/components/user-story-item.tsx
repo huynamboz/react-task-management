@@ -3,15 +3,14 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { IconBook } from "@tabler/icons-react";
 import { GripVertical, Target } from "lucide-react";
 import type { Task, UserStory } from "@/store/types";
-import { useProjectState } from "@/store/hooks";
+import { useProjectStore } from "@/store";
 
 type UserStoryItemProps = {
   userStory: UserStory
 };
 export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
-  const state = useProjectState();
-  const tasks = state.tasks.get(userStory.id) || [];
-  console.log(tasks);
+  const { tasks } = useProjectStore();
+  const tasksByUserStoryId = tasks.get(userStory.id) || [];
 
   return (
     <div draggable className="group border rounded-2xl shadow-sm bg-white">
@@ -55,7 +54,7 @@ export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
 
             <div className="flex items-center text-sm gap-4 text-gray-600">
               {/* <span>{userStory.assignee}</span> */}
-              <span>{tasks.length} tasks</span>
+              <span>{tasksByUserStoryId.length} tasks</span>
             </div>
 
             {/* Tags */}
@@ -76,7 +75,7 @@ export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
           <div className="space-y-2 mt-4">
             <div className="flex items-center gap-2 text-gray-600">
               <Target className="w-4 h-4" />
-              <h2 className="text-sm font-medium">Tasks ({tasks.length})</h2>
+              <h2 className="text-sm font-medium">Tasks ({tasksByUserStoryId.length})</h2>
             </div>
 
             <div className="space-y-2 pl-4">
@@ -106,7 +105,7 @@ export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
                 </CardHeader>
               </Card> */}
 
-              {tasks.map((task: Task) => (
+              {tasksByUserStoryId.map((task: Task) => (
                 <Card
                   key={task.id}
                   draggable

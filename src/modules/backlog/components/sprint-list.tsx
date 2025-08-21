@@ -1,10 +1,11 @@
 
 import { SprintItem } from "./sprint-item";
-import { useProjectState } from "@/store/hooks";
+import { useProjectStore } from "@/store";
 
 export const SprintList = () => {
-  const state = useProjectState();
-  const sprints = Array.from(state.sprints.values());
+  const { sprints } = useProjectStore();
+  console.log(sprints);
+  // const sprints = Array.from(state.sprints.values());
 
   return (
     <div>

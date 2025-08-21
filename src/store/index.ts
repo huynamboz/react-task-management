@@ -7,3 +7,6 @@ export { StateContext, DispatchContext } from './contexts';
 
 // Reducer
 export { projectReducer } from './reducer';
+
+// Store Hooks
+export { useProjectStore } from './hooks';
