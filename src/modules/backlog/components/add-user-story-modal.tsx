@@ -5,9 +5,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useForm, Controller } from "react-hook-form";
-import { useProjectStore } from "@/store";
+import { useProjectStore, type UserStory } from "@/store";
 import { axiosClient } from "@/shared/query-client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface AddUserStoryModalProps {
   isOpen: boolean;
@@ -46,7 +46,13 @@ type FormValues = {
 
 export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) => {
   const queryClient = useQueryClient();
-  
+  const { dispatch, sprints } = useProjectStore();
+  const { refetch: refetchUserStories } = useQuery({
+    queryKey: ['userStories'],
+    queryFn: () => axiosClient.get(`/user-stories`),
+    enabled: false,
+  });
+
   const createUserStory = useMutation({
     mutationFn: async (userStory: {
       title: string;
@@ -65,7 +71,6 @@ export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) =
     },
   }); 
   
-  const { sprints } = useProjectStore();
   const { register, handleSubmit, reset, control } = useForm<FormValues>({
     defaultValues: {
       title: "",
@@ -92,6 +97,14 @@ export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) =
 
     try {
       await createUserStory.mutateAsync(newUserStory);
+      const { data: userStories } = await refetchUserStories();
+      dispatch({
+        type: "SET_USER_STORIES_BY_SPRINT_ID",
+        payload: {
+          sprintId: newUserStory.sprintId || '',
+          userStories: (userStories?.data as UserStory[]).filter(us => us.sprintId === newUserStory.sprintId),
+        },
+      });
       reset();
       onClose();
     } catch (error) {
