@@ -12,6 +12,7 @@ export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
   const state = useProjectState();
   const tasks = state.tasks.get(userStory.id) || [];
   console.log(tasks);
+
   return (
     <div draggable className="group border rounded-2xl shadow-sm bg-white">
       <div className="flex items-center gap-2 border-l-3 rounded-tl-2xl rounded-bl-2xl p-4 border-gray-200 pr-4">

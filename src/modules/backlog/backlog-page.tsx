@@ -3,13 +3,16 @@ import { Button } from "@/components/ui/button";
 import { IconPlus } from "@tabler/icons-react";
 import { FilterBox } from "./components/fillter-box";
 import { SprintList } from "./components/sprint-list";
-import { useEffect } from "react";
+import { AddSprintModal } from "./components/add-sprint-modal";
+import { AddUserStoryModal } from "./components/add-user-story-modal";
+import { useEffect, useState } from "react";
 import { useProjectState, useProjectDispatch } from "@/store/hooks";
 
 export const BacklogPage = () => {
   const state = useProjectState();
   const dispatch = useProjectDispatch();
-
+  const [isAddSprintModalOpen, setIsAddSprintModalOpen] = useState(false);
+  const [isAddUserStoryModalOpen, setIsAddUserStoryModalOpen] = useState(false);
   // Load sample data on component mount
   useEffect(() => {
     if (state.sprints.size === 0) {
@@ -117,6 +120,7 @@ export const BacklogPage = () => {
 
   return (
     <div>
+      <AddSprintModal isOpen={isAddSprintModalOpen} onClose={() => setIsAddSprintModalOpen(false)} />
       {/* header */}
       <div className="px-6 flex items-center justify-between mt-2">
         <div>
@@ -126,7 +130,7 @@ export const BacklogPage = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="px-4 py-2rounded-md">
+          <Button variant="outline" className="px-4 py-2rounded-md" onClick={() => setIsAddSprintModalOpen(true)}>
             <IconPlus className="mr-2" />
             Create Sprint
           </Button>
@@ -134,7 +138,10 @@ export const BacklogPage = () => {
             <IconPlus className="mr-2" />
             Add Task
           </Button>
-          <Button className="px-4 py-2rounded-md">
+          <Button 
+            className="px-4 py-2rounded-md"
+            onClick={() => setIsAddUserStoryModalOpen(true)}
+          >
             <IconPlus className="mr-2" />
             Add User Story
           </Button>
@@ -152,6 +159,16 @@ export const BacklogPage = () => {
       <div className="px-6 mt-6">
         <SprintList />
       </div>
+
+      {/* Modals */}
+      <AddSprintModal 
+        isOpen={isAddSprintModalOpen} 
+        onClose={() => setIsAddSprintModalOpen(false)} 
+      />
+      <AddUserStoryModal 
+        isOpen={isAddUserStoryModalOpen} 
+        onClose={() => setIsAddUserStoryModalOpen(false)} 
+      />
     </div>
   );
 };
