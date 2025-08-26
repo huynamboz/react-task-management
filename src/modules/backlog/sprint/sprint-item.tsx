@@ -7,13 +7,13 @@ import {
   IconDots,
   IconPlayerPlay,
 } from "@tabler/icons-react";
-import { UserStoryList } from "./user-story-list";
+import { UserStoryList } from "@/modules/backlog/user-story/user-story-list";
 import { useState } from "react";
 import { CircleCheckBig } from "lucide-react";
-import type { Sprint, UserStory } from "@/store/types";
+import type { Sprint, UserStory } from "@/modules/backlog/store/types";
 import { useQuery } from "@tanstack/react-query";
 import { axiosClient } from "@/shared/query-client";
-import { useProjectStore } from "@/store";
+import { useProjectStore } from "@/modules/backlog/store";
 
 type SprintItemProps = {
   sprint: Sprint

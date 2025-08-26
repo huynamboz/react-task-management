@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 import { IconPlus } from "@tabler/icons-react";
 import { FilterBox } from "./components/fillter-box";
 import { SprintList } from "./components/sprint-list";
-import { AddSprintModal } from "./components/add-sprint-modal";
-import { AddUserStoryModal } from "./components/add-user-story-modal";
+import { AddSprintModal } from "./components/backlog-header/backlog-actions/add-sprint-modal";
+import { AddUserStoryModal } from "./components/backlog-header/backlog-actions/add-user-story-modal";
 import { AddTaskModal } from "./components/add-task-modal";
 import { useEffect, useState } from "react";
-import { useProjectStore } from "@/store";
+import { useProjectStore } from "@/modules/backlog/store";
 import { axiosClient } from "@/shared/query-client";
 import { useQuery } from "@tanstack/react-query";
 

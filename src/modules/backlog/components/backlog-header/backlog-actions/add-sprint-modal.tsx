@@ -9,7 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { IconCalendar } from "@tabler/icons-react";
-import { useProjectStore, type Sprint } from "@/store";
+import { useProjectStore, type Sprint } from "@/modules/backlog/store";
 import { useForm } from "react-hook-form";
 import { axiosClient, queryClient } from "@/shared/query-client";
 import { useMutation, useQuery } from "@tanstack/react-query";

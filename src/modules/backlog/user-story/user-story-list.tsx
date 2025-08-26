@@ -1,5 +1,5 @@
 // import { useProjectState } from "@/store/hooks";
-import { useProjectStore } from "@/store";
+import { useProjectStore } from "@/modules/backlog/store";
 import { UserStoryItem } from "./user-story-item";
 
 type UserStoryListProps = {

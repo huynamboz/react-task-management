@@ -1,6 +1,6 @@
 
 import { SprintItem } from "./sprint-item";
-import { useProjectStore } from "@/store";
+import { useProjectStore } from "@/modules/backlog/store";
 
 export const SprintList = () => {
   const { sprints } = useProjectStore();

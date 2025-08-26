@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useForm, Controller } from "react-hook-form";
-import { useProjectStore, type UserStory } from "@/store";
+import { useProjectStore, type UserStory } from "@/modules/backlog/store";
 import { axiosClient } from "@/shared/query-client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 

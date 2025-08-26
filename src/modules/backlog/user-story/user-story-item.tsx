@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { IconBook } from "@tabler/icons-react";
 import { GripVertical, Target, Plus } from "lucide-react";
-import type { Task, UserStory } from "@/store/types";
-import { useProjectStore } from "@/store";
-import { priorityOptions } from "./add-user-story-modal";
+import type { Task, UserStory } from "@/modules/backlog/store/types";
+import { useProjectStore } from "@/modules/backlog/store";
+import { priorityOptions } from "../components/backlog-header/backlog-actions/add-user-story-modal";
 import { useState } from "react";
-import { AddTaskModal } from "./add-task-modal";
+import { AddTaskModal } from "../components/backlog-header/backlog-actions/add-task-modal";
 
 type UserStoryItemProps = {
   userStory: UserStory
