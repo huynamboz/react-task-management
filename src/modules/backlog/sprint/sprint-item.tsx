@@ -10,9 +10,9 @@ import {
 import { UserStoryList } from "@/modules/backlog/user-story/user-story-list";
 import { useState } from "react";
 import { CircleCheckBig } from "lucide-react";
-import type { Sprint, UserStory } from "@/modules/backlog/backlog-store";
+import type { Sprint } from "@/modules/backlog/shared/sprint/sprint-api-client";
 import { useBacklogListDispatch } from "@/modules/backlog/backlog-store";
-import { apiClient } from "@/shared/apiClient";
+import { userStoryApiClient } from "../shared/user-story/userstory-api-client";
 
 type SprintItemProps = {
   sprint: Sprint
@@ -33,13 +33,13 @@ export const SprintItem = ({ sprint }: SprintItemProps) => {
 
   const toggleUserStories = async () => {
     if (!isShowUserStories) {
-      // TODO: Replace with actual API call
-      const { data } = await apiClient.get<{data:UserStory[]}>(`/user-stories?sprintId=${sprint.id}`);
+      const userStories = await userStoryApiClient.getAll();
+      console.log(userStories);
       dispatch({
         type: "SET_USER_STORIES_BY_SPRINT_ID",
         payload: {
           sprintId: sprint.id,
-          userStories: (data?.data as UserStory[]).filter(us => us.sprintId === sprint.id),
+          userStories: userStories.filter(us => us.sprintId === sprint.id),
         },
       });
     }
@@ -79,7 +79,7 @@ export const SprintItem = ({ sprint }: SprintItemProps) => {
 
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <IconBook size={18} />
-                <p>{sprint.userStoryTotal} stories</p>
+                {/* <p>{sprint.userStoryTotal} stories</p> */}
               </div>
             </div>
           </div>

@@ -7,9 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useForm, Controller } from "react-hook-form";
 import { useBacklogListDispatch, useBacklogListState } from "@/modules/backlog/backlog-store";
-import type { Sprint, UserStory } from "@/modules/backlog/backlog-store";
+import type { Sprint } from "@/modules/backlog/shared/sprint/sprint-api-client";
 import { useState } from "react";
-import { apiClient } from "@/shared/apiClient";
+import { userStoryApiClient } from "@/modules/backlog/shared/user-story/userstory-api-client";
 
 interface AddUserStoryModalProps {
   isOpen: boolean;
@@ -78,13 +78,13 @@ export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) =
 
     try {
       setIsLoading(true);
-      const { data: userStory } = await apiClient.post<{data:UserStory}>('/user-stories', newUserStory);
-      const { data: userStories } = await apiClient.get<{data:UserStory[]}>('/user-stories');
+      const userStory = await userStoryApiClient.create(newUserStory);
+      const userStories = await userStoryApiClient.getAll();
       dispatch({
         type: "SET_USER_STORIES_BY_SPRINT_ID",
         payload: {
-          sprintId: userStory.data.sprintId || '',
-          userStories: (userStories?.data as UserStory[]).filter(us => us.sprintId === userStory.data.sprintId),
+          sprintId: userStory.sprintId || '',
+          userStories: userStories.filter(us => us.sprintId === userStory.sprintId),
         },
       });
       reset();

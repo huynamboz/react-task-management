@@ -1,13 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useReducer, type ReactNode } from 'react';
-
-export type Sprint = {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  userStoryTotal: number;
-};
+import type { Sprint } from './shared/sprint/sprint-api-client';
 
 export type UserStory = {
   id: string;

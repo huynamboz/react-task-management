@@ -26,4 +26,10 @@ export const apiClient = {
   post<T>(url: string, data?: unknown, config?: ApiClientConfig): Promise<AxiosResponse<T>> {
     return axiosClient.post<T>(url, data, config);
   },
+  put<T>(url: string, data?: unknown, config?: ApiClientConfig): Promise<AxiosResponse<T>> {
+    return axiosClient.put<T>(url, data, config);
+  },
+  delete<T>(url: string, config?: ApiClientConfig): Promise<AxiosResponse<T>> {
+    return axiosClient.delete<T>(url, config);
+  },
 }
