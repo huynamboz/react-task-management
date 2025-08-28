@@ -31,6 +31,14 @@ axiosClient.interceptors.response.use((response) => {
       localStorage.setItem("token", (data as { accessToken: string }).accessToken);
       refreshment = false;
     }
+
+    return axiosClient.request({
+      ...error.config,
+      headers: {
+        ...error.config.headers,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
   }
 });
 
