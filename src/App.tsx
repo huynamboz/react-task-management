@@ -2,7 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import {MainLayout} from "@/layouts/main-layout";
 import { ProjectProvider } from "./modules/backlog/backlog-store";
-import { QueryProvider } from "./shared/query-provider";
 
 const BacklogPage = lazy(() => 
   import("./modules/backlog/backlog-page").then(module => ({ default: module.BacklogPage }))
@@ -22,29 +21,27 @@ const PageLoading = () => (
 
 function App() {
   return (
-    <QueryProvider>
-      <ProjectProvider>
-        <Routes>
-        <Route element={<MainLayout />}>
-          <Route path="/" element={
-            <Suspense fallback={<PageLoading />}>
-              <BacklogPage />
-            </Suspense>
-          } />
-          <Route path="/sprints" element={
-            <Suspense fallback={<PageLoading />}>
-              <SprintDetailPage />
-            </Suspense>
-          } />
-          <Route path="/timelines" element={
-            <Suspense fallback={<PageLoading />}>
-              <TimelinePage />
-            </Suspense>
-          } />
-        </Route>
-      </Routes>
-      </ProjectProvider>
-    </QueryProvider>
+    <ProjectProvider>
+      <Routes>
+      <Route element={<MainLayout />}>
+        <Route path="/" element={
+          <Suspense fallback={<PageLoading />}>
+            <BacklogPage />
+          </Suspense>
+        } />
+        <Route path="/sprints" element={
+          <Suspense fallback={<PageLoading />}>
+            <SprintDetailPage />
+          </Suspense>
+        } />
+        <Route path="/timelines" element={
+          <Suspense fallback={<PageLoading />}>
+            <TimelinePage />
+          </Suspense>
+        } />
+      </Route>
+    </Routes>
+    </ProjectProvider>
   );
 }
 

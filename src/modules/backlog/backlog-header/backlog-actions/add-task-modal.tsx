@@ -6,8 +6,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useForm, Controller } from "react-hook-form";
 import { useBacklogListDispatch, useBacklogListState } from "@/modules/backlog/backlog-store";
-import { axiosClient } from "@/shared/query-client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
@@ -31,36 +29,11 @@ type FormValues = {
 };
 
 export const AddTaskModal = ({ isOpen, onClose, userStoryId }: AddTaskModalProps) => {
-  const queryClient = useQueryClient();
   const dispatch = useBacklogListDispatch();
   const { sprints, userStories } = useBacklogListState();
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
-
-  const { refetch: refetchTasks } = useQuery({
-    queryKey: ['tasks'],
-    queryFn: () => axiosClient.get(`/tasks`),
-    enabled: false,
-  });
-
-  const createTask = useMutation({
-    mutationFn: async (task: {
-      title: string;
-      description: string;
-      dueDate: string;
-      priority: string;
-      assignee: string;
-      sprintId: string | null;
-      userStoryId: string | null;
-      tags: string[];
-    }) => {
-      const response = await axiosClient.post('/tasks', task);
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
-    },
-  });
+  const [isLoading, setIsLoading] = useState(false);
 
   const { register, handleSubmit, reset, control } = useForm<FormValues>({
     defaultValues: {
@@ -101,8 +74,10 @@ export const AddTaskModal = ({ isOpen, onClose, userStoryId }: AddTaskModalProps
     };
 
     try {
-      await createTask.mutateAsync(newTask);
-      const { data: tasks } = await refetchTasks();
+      setIsLoading(true);
+      // TODO: Replace with actual API call
+      // const response = await axiosClient.post('/tasks', newTask);
+      // const { data: tasks } = await axiosClient.get('/tasks');
       
       // Update store with new task
       if (newTask.userStoryId) {
@@ -111,7 +86,7 @@ export const AddTaskModal = ({ isOpen, onClose, userStoryId }: AddTaskModalProps
           payload: {
             userStoryId: newTask.userStoryId,
             task: {
-              id: tasks?.data?.id || Date.now().toString(),
+              id: Date.now().toString(),
               userStoryId: newTask.userStoryId,
               title: newTask.title,
               description: newTask.description,
@@ -127,6 +102,8 @@ export const AddTaskModal = ({ isOpen, onClose, userStoryId }: AddTaskModalProps
       onClose();
     } catch (error) {
       console.error('Failed to create task:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -327,8 +304,8 @@ export const AddTaskModal = ({ isOpen, onClose, userStoryId }: AddTaskModalProps
             <Button type="button" variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button type="submit" disabled={createTask.isPending}>
-              {createTask.isPending ? 'Creating...' : 'Create Task'}
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? 'Creating...' : 'Create Task'}
             </Button>
           </div>
         </form>

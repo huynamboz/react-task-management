@@ -9,11 +9,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { IconCalendar } from "@tabler/icons-react";
-import { useBacklogListDispatch } from "@/modules/backlog/backlog-store";
-import type { Sprint } from "@/modules/backlog/backlog-store";
+
 import { useForm } from "react-hook-form";
-import { axiosClient, queryClient } from "@/shared/query-client";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 interface AddSprintModalProps {
   isOpen: boolean;
@@ -28,26 +26,7 @@ type FormValues = {
 };
 
 export const AddSprintModal = ({ isOpen, onClose }: AddSprintModalProps) => {
-  const dispatch = useBacklogListDispatch();
-
-  const createSprint = useMutation({
-    mutationFn: async (sprint: Omit<Sprint, 'id'>) => {
-      const response = await axiosClient.post('/sprints', sprint);
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sprints'] });
-    },
-  });
-
-  const getSprints = useQuery({
-    queryKey: ['sprints'],
-    queryFn: async () => {
-      const response = await axiosClient.get('/sprints');
-      return response.data;
-    },
-    enabled: false,
-  });
+  const [isLoading, setIsLoading] = useState(false);
 
   const { register, handleSubmit, reset } = useForm<FormValues>({
     defaultValues: {
@@ -61,27 +40,23 @@ export const AddSprintModal = ({ isOpen, onClose }: AddSprintModalProps) => {
   const onSubmit = async (data: FormValues) => {
     if (!data.name || !data.startDate || !data.endDate) return;
 
-    const newSprint = {
-      name: data.name,
-      startDate: data.startDate,
-      goal: data.goal,
-      endDate: data.endDate,
-      userStoryTotal: 0,
-    };
-
     try {
-      await createSprint.mutateAsync(newSprint);
-      const result = await getSprints.refetch();
-      if (result.data) {
-        dispatch({
-          type: 'SET_SPRINTS',
-          payload: result.data
-        });
-      }
+      setIsLoading(true);
+      // TODO: Replace with actual API call
+      // const newSprint = {
+      //   name: data.name,
+      //   startDate: data.startDate,
+      //   goal: data.goal,
+      //   endDate: data.endDate,
+      //   userStoryTotal: 0,
+      // };
+      // const response = await axiosClient.post('/sprints', newSprint);
       reset();
       onClose();
     } catch (error) {
       console.error('Failed to create sprint:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -163,8 +138,8 @@ export const AddSprintModal = ({ isOpen, onClose }: AddSprintModalProps) => {
             <Button type="button" variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button type="submit" disabled={createSprint.isPending}>
-              {createSprint.isPending ? 'Creating...' : 'Create Sprint'}
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? 'Creating...' : 'Create Sprint'}
             </Button>
           </div>
         </form>

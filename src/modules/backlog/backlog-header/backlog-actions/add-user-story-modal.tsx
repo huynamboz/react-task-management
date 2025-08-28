@@ -7,10 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useForm, Controller } from "react-hook-form";
 import { useBacklogListDispatch, useBacklogListState } from "@/modules/backlog/backlog-store";
-import { axiosClient } from "@/shared/query-client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { UserStory } from "@/modules/backlog/backlog-store";
-import type { Sprint } from "@/modules/backlog/backlog-store";
+import type { Sprint, UserStory } from "@/modules/backlog/backlog-store";
+import { useState } from "react";
+import { apiClient } from "@/shared/apiClient";
 
 interface AddUserStoryModalProps {
   isOpen: boolean;
@@ -48,33 +47,10 @@ type FormValues = {
 };
 
 export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) => {
-  const queryClient = useQueryClient();
   const dispatch = useBacklogListDispatch();
   const { sprints } = useBacklogListState();
   const sprintList = Array.from(sprints.values());
-  const { refetch: refetchUserStories } = useQuery({
-    queryKey: ['userStories'],
-    queryFn: () => axiosClient.get(`/user-stories`),
-    enabled: false,
-  });
-
-  const createUserStory = useMutation({
-    mutationFn: async (userStory: {
-      title: string;
-      description: string;
-      priorityId: string;
-      point: number;
-      sprintId: string | null;
-      tags: string[];
-    }) => {
-      const response = await axiosClient.post('/user-stories', userStory);
-      return response.data;
-    },
-    onSuccess: () => {
-      // Invalidate and refetch user stories after creating
-      queryClient.invalidateQueries({ queryKey: ['userStories'] });
-    },
-  }); 
+  const [isLoading, setIsLoading] = useState(false);
   
   const { register, handleSubmit, reset, control } = useForm<FormValues>({
     defaultValues: {
@@ -101,19 +77,22 @@ export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) =
     };
 
     try {
-      await createUserStory.mutateAsync(newUserStory);
-      const { data: userStories } = await refetchUserStories();
+      setIsLoading(true);
+      const { data: userStory } = await apiClient.post<{data:UserStory}>('/user-stories', newUserStory);
+      const { data: userStories } = await apiClient.get<{data:UserStory[]}>('/user-stories');
       dispatch({
         type: "SET_USER_STORIES_BY_SPRINT_ID",
         payload: {
-          sprintId: newUserStory.sprintId || '',
-          userStories: (userStories?.data as UserStory[]).filter(us => us.sprintId === newUserStory.sprintId),
+          sprintId: userStory.data.sprintId || '',
+          userStories: (userStories?.data as UserStory[]).filter(us => us.sprintId === userStory.data.sprintId),
         },
       });
       reset();
       onClose();
     } catch (error) {
       console.error('Failed to create user story:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -259,8 +238,8 @@ export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) =
             <Button type="button" variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button type="submit" disabled={createUserStory.isPending}>
-              {createUserStory.isPending ? 'Creating...' : 'Create User Story'}
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? 'Creating...' : 'Create User Story'}
             </Button>
           </div>
         </form>

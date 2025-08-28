@@ -11,9 +11,8 @@ import { UserStoryList } from "@/modules/backlog/user-story/user-story-list";
 import { useState } from "react";
 import { CircleCheckBig } from "lucide-react";
 import type { Sprint, UserStory } from "@/modules/backlog/backlog-store";
-import { useQuery } from "@tanstack/react-query";
-import { axiosClient } from "@/shared/query-client";
 import { useBacklogListDispatch } from "@/modules/backlog/backlog-store";
+import { apiClient } from "@/shared/apiClient";
 
 type SprintItemProps = {
   sprint: Sprint
@@ -23,11 +22,6 @@ export const SprintItem = ({ sprint }: SprintItemProps) => {
   const [isSprintStarted, setIsSprintStarted] = useState(false);
   const [isSprintCompleted, setIsSprintCompleted] = useState(false);
   const dispatch = useBacklogListDispatch();
-  const { refetch: refetchUserStories } = useQuery({
-    queryKey: ['userStories', sprint.id],
-    queryFn: () => axiosClient.get(`/user-stories?sprintId=${sprint.id}`),
-    enabled: false,
-  });
 
   const markSprintAsCompleted = () => {
     setIsSprintCompleted(true);
@@ -39,7 +33,8 @@ export const SprintItem = ({ sprint }: SprintItemProps) => {
 
   const toggleUserStories = async () => {
     if (!isShowUserStories) {
-      const { data } = await refetchUserStories();
+      // TODO: Replace with actual API call
+      const { data } = await apiClient.get<{data:UserStory[]}>(`/user-stories?sprintId=${sprint.id}`);
       dispatch({
         type: "SET_USER_STORIES_BY_SPRINT_ID",
         payload: {
