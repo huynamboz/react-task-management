@@ -1,5 +1,11 @@
 import { config } from "@/config/env";
-import axios, { AxiosHeaders, type AxiosResponse, type CustomParamsSerializer, type ParamsSerializerOptions, type RawAxiosRequestHeaders } from "axios";
+import axios, {
+  AxiosHeaders,
+  type AxiosResponse,
+  type CustomParamsSerializer,
+  type ParamsSerializerOptions,
+  type RawAxiosRequestHeaders,
+} from "axios";
 
 export const axiosClient = axios.create({
   baseURL: config.api.baseURL,
@@ -7,8 +13,7 @@ export const axiosClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-}); 
-
+});
 
 axiosClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
@@ -18,36 +23,42 @@ axiosClient.interceptors.request.use((config) => {
   return config;
 });
 
-let refreshment = false;
-axiosClient.interceptors.response.use((response) => {
-  return response;
-}, async (error) => {
-  if (error.response.status === 401 ) {
-    if (!refreshment) {
-      try {
-        refreshment = true;
-      const { data } = await apiClient.post("/auth/refresh", {
-        refreshToken: localStorage.getItem("refreshToken"),
-      });
-      localStorage.setItem("token", (data as { accessToken: string }).accessToken);
-      } catch {
-        localStorage.removeItem("token");
-        localStorage.removeItem("refreshToken");
-        window.location.href = "/login";
-      } finally {
-        refreshment = false;
+let isRefreshing = false;
+axiosClient.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    if (error.response.status === 401) {
+      if (!isRefreshing) {
+        try {
+          isRefreshing = true;
+          const { data } = await apiClient.post("/auth/refresh", {
+            refreshToken: localStorage.getItem("refreshToken"),
+          });
+          localStorage.setItem(
+            "token",
+            (data as { accessToken: string }).accessToken
+          );
+        } catch {
+          localStorage.removeItem("token");
+          localStorage.removeItem("refreshToken");
+          window.location.href = "/login";
+        } finally {
+          isRefreshing = false;
+        }
       }
-    }
 
-    return axiosClient.request({
-      ...error.config,
-      headers: {
-        ...error.config.headers,
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+      return axiosClient.request({
+        ...error.config,
+        headers: {
+          ...error.config.headers,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+    }
   }
-});
+);
 
 export type ApiClientConfig = {
   url?: string;
@@ -55,7 +66,7 @@ export type ApiClientConfig = {
   params?: unknown;
   paramsSerializer?: ParamsSerializerOptions | CustomParamsSerializer;
   data?: unknown;
-}
+};
 export const apiClient = {
   request<T>(config: ApiClientConfig): Promise<AxiosResponse<T>> {
     return axiosClient.request<T>(config);
@@ -63,13 +74,21 @@ export const apiClient = {
   get<T>(url: string, config?: ApiClientConfig): Promise<AxiosResponse<T>> {
     return axiosClient.get<T>(url, config);
   },
-  post<T>(url: string, data?: unknown, config?: ApiClientConfig): Promise<AxiosResponse<T>> {
+  post<T>(
+    url: string,
+    data?: unknown,
+    config?: ApiClientConfig
+  ): Promise<AxiosResponse<T>> {
     return axiosClient.post<T>(url, data, config);
   },
-  put<T>(url: string, data?: unknown, config?: ApiClientConfig): Promise<AxiosResponse<T>> {
+  put<T>(
+    url: string,
+    data?: unknown,
+    config?: ApiClientConfig
+  ): Promise<AxiosResponse<T>> {
     return axiosClient.put<T>(url, data, config);
   },
   delete<T>(url: string, config?: ApiClientConfig): Promise<AxiosResponse<T>> {
     return axiosClient.delete<T>(url, config);
   },
-}
+};
