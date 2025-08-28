@@ -24,12 +24,19 @@ axiosClient.interceptors.response.use((response) => {
 }, async (error) => {
   if (error.response.status === 401 ) {
     if (!refreshment) {
-      refreshment = true;
+      try {
+        refreshment = true;
       const { data } = await apiClient.post("/auth/refresh", {
         refreshToken: localStorage.getItem("refreshToken"),
       });
       localStorage.setItem("token", (data as { accessToken: string }).accessToken);
-      refreshment = false;
+      } catch {
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+      } finally {
+        refreshment = false;
+      }
     }
 
     return axiosClient.request({
