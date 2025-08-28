@@ -10,10 +10,10 @@ import {
 import { UserStoryList } from "@/modules/backlog/user-story/user-story-list";
 import { useState } from "react";
 import { CircleCheckBig } from "lucide-react";
-import type { Sprint, UserStory } from "@/modules/backlog/store/types";
+import type { Sprint, UserStory } from "@/modules/backlog/backlog-store";
 import { useQuery } from "@tanstack/react-query";
 import { axiosClient } from "@/shared/query-client";
-import { useProjectStore } from "@/modules/backlog/store";
+import { useBacklogListDispatch } from "@/modules/backlog/backlog-store";
 
 type SprintItemProps = {
   sprint: Sprint
@@ -22,7 +22,7 @@ export const SprintItem = ({ sprint }: SprintItemProps) => {
   const [isShowUserStories, setIsShowUserStories] = useState(false);
   const [isSprintStarted, setIsSprintStarted] = useState(false);
   const [isSprintCompleted, setIsSprintCompleted] = useState(false);
-  const {dispatch} = useProjectStore();
+  const dispatch = useBacklogListDispatch();
   const { refetch: refetchUserStories } = useQuery({
     queryKey: ['userStories', sprint.id],
     queryFn: () => axiosClient.get(`/user-stories?sprintId=${sprint.id}`),

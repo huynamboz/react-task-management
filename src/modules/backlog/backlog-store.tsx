@@ -1,6 +1,100 @@
-import type { State, Action } from './types';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useReducer, type ReactNode } from 'react';
 
-export function projectReducer(state: State, action: Action): State {
+export type Sprint = {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  userStoryTotal: number;
+};
+
+export type UserStory = {
+  id: string;
+  title: string;
+  description: string;
+  priorityId: string;
+  point: number;
+  sprintId: string | null;
+  tags: string[];
+  creator?: string;
+};
+
+// Legacy type for backward compatibility
+export type LegacyUserStory = {
+  id: string;
+  sprintId: string;
+  title: string;
+  description: string;
+  priority: "high" | "medium" | "low";
+  points: number;
+  creator: string;
+};
+
+export type Task = {
+  id: string;
+  userStoryId: string;
+  title: string;
+  description: string;
+  priority: string;
+  assignee: string;
+};
+
+export type State = {
+  sprints: Map<string, Sprint>;
+  userStories: Map<string, UserStory[]>;
+  tasks: Map<string, Task[]>;
+  filters: {
+    search: string;
+    priority: "all" | "high" | "medium" | "low";
+    assignee: "all" | string;
+  };
+  ui: {
+    selectedSprintId: string | null;
+    selectedUserStoryId: string | null;
+  };
+};
+
+export type Action =
+  | { type: "SET_SPRINTS"; payload: Sprint[] }
+  | { type: "SET_USER_STORIES"; payload: { sprintId: string; userStories: UserStory[] }[] }
+  | { type: "SET_USER_STORIES_BY_SPRINT_ID"; payload: { sprintId: string; userStories: UserStory[] } }
+  | { type: "SET_TASKS"; payload: { userStoryId: string; tasks: Task[] }[] }
+  | { type: "SELECT_SPRINT"; payload: string | null }
+  | { type: "SELECT_USER_STORY"; payload: string | null }
+  | { type: "SET_FILTER"; payload: Partial<State["filters"]> }
+  | { type: "ADD_SPRINT"; payload: Sprint }
+  | { type: "UPDATE_SPRINT"; payload: Sprint }
+  | { type: "DELETE_SPRINT"; payload: string }
+  | { type: "ADD_USER_STORY"; payload: { sprintId: string; userStory: UserStory } }
+  | { type: "UPDATE_USER_STORY"; payload: { sprintId: string; userStory: UserStory } }
+  | { type: "DELETE_USER_STORY"; payload: { sprintId: string; userStoryId: string } }
+  | { type: "ADD_TASK"; payload: { userStoryId: string; task: Task } }
+  | { type: "UPDATE_TASK"; payload: { userStoryId: string; task: Task } }
+  | { type: "DELETE_TASK"; payload: { userStoryId: string; taskId: string } };
+
+
+const initialState: State = {
+  sprints: new Map(),
+  userStories: new Map(),
+  tasks: new Map(),
+  filters: {
+    search: "",
+    priority: "all",
+    assignee: "all",
+  },
+  ui: {
+    selectedSprintId: null,
+    selectedUserStoryId: null,
+  },
+};
+
+
+const StateContext = createContext<State | undefined>(undefined);
+const DispatchContext = createContext<React.Dispatch<Action> | undefined>(undefined);
+
+
+function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "SET_SPRINTS":
       return {
@@ -134,3 +228,28 @@ export function projectReducer(state: State, action: Action): State {
       return state;
   }
 }
+
+export function ProjectProvider({ children }: { children: ReactNode }) {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  return (
+    <StateContext.Provider value={state}>
+      <DispatchContext.Provider value={dispatch}>
+        {children}
+      </DispatchContext.Provider>
+    </StateContext.Provider>
+  );
+}
+
+// Hooks
+export const useBacklogListState = () => {
+  const context = useContext(StateContext);
+  if (!context) throw new Error("useBacklogListState must be used within BacklogListProvider");
+  return context;
+};
+
+export const useBacklogListDispatch = () => {
+  const context = useContext(DispatchContext);
+  if (!context) throw new Error("useBacklogListDispatch must be used within BacklogListProvider");
+  return context;
+};

@@ -1,5 +1,5 @@
 // import { useProjectState } from "@/store/hooks";
-import { useProjectStore } from "@/modules/backlog/store";
+import { useBacklogListState } from "@/modules/backlog/backlog-store";
 import { UserStoryItem } from "./user-story-item";
 
 type UserStoryListProps = {
@@ -7,7 +7,7 @@ type UserStoryListProps = {
 }
 
 export const UserStoryList = ({ sprintId }: UserStoryListProps) => {
-  const { userStories } = useProjectStore();
+  const { userStories } = useBacklogListState();
   const userStoriesBySprintId = userStories.get(sprintId) || [];
 
   return (

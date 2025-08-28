@@ -3,17 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { IconBook } from "@tabler/icons-react";
 import { GripVertical, Target, Plus } from "lucide-react";
-import type { Task, UserStory } from "@/modules/backlog/store/types";
-import { useProjectStore } from "@/modules/backlog/store";
-import { priorityOptions } from "../components/backlog-header/backlog-actions/add-user-story-modal";
+import type { Task, UserStory } from "@/modules/backlog/backlog-store";
+import { useBacklogListState } from "@/modules/backlog/backlog-store";
+import { priorityOptions } from "../backlog-header/backlog-actions/add-user-story-modal";
 import { useState } from "react";
-import { AddTaskModal } from "../components/backlog-header/backlog-actions/add-task-modal";
+import { AddTaskModal } from "../backlog-header/backlog-actions/add-task-modal";
 
 type UserStoryItemProps = {
   userStory: UserStory
 };
 export const UserStoryItem = ({ userStory }: UserStoryItemProps) => {
-  const { tasks } = useProjectStore();
+  const { tasks } = useBacklogListState();
   const tasksByUserStoryId = tasks.get(userStory.id) || [];
   const [isAddTaskModalOpen, setIsAddTaskModalOpen] = useState(false);
 

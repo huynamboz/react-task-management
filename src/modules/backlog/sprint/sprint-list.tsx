@@ -1,16 +1,16 @@
 
 import { SprintItem } from "./sprint-item";
-import { useProjectStore } from "@/modules/backlog/store";
+import { useBacklogListState } from "@/modules/backlog/backlog-store";
+import type { Sprint } from "../backlog-store";
 
 export const SprintList = () => {
-  const { sprints } = useProjectStore();
-  console.log(sprints);
-  // const sprints = Array.from(state.sprints.values());
-
+  const { sprints } = useBacklogListState();
+  const sprintList = Array.from(sprints.values());
+  console.log(sprintList);
   return (
     <div>
       <div className="flex flex-col gap-6">
-        {sprints.map((sprint) => (
+        {sprintList.map((sprint: Sprint) => (
           <SprintItem key={sprint.id} sprint={sprint} />
         ))}
       </div>

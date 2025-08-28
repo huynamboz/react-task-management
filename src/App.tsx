@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import {MainLayout} from "@/layouts/main-layout";
-import { ProjectProvider } from "./modules/backlog/store";
+import { ProjectProvider } from "./modules/backlog/backlog-store";
 import { QueryProvider } from "./shared/query-provider";
 
 const BacklogPage = lazy(() => 

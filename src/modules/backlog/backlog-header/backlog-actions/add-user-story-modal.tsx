@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -5,9 +6,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useForm, Controller } from "react-hook-form";
-import { useProjectStore, type UserStory } from "@/modules/backlog/store";
+import { useBacklogListDispatch, useBacklogListState } from "@/modules/backlog/backlog-store";
 import { axiosClient } from "@/shared/query-client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { UserStory } from "@/modules/backlog/backlog-store";
+import type { Sprint } from "@/modules/backlog/backlog-store";
 
 interface AddUserStoryModalProps {
   isOpen: boolean;
@@ -46,7 +49,9 @@ type FormValues = {
 
 export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) => {
   const queryClient = useQueryClient();
-  const { dispatch, sprints } = useProjectStore();
+  const dispatch = useBacklogListDispatch();
+  const { sprints } = useBacklogListState();
+  const sprintList = Array.from(sprints.values());
   const { refetch: refetchUserStories } = useQuery({
     queryKey: ['userStories'],
     queryFn: () => axiosClient.get(`/user-stories`),
@@ -228,7 +233,7 @@ export const AddUserStoryModal = ({ isOpen, onClose }: AddUserStoryModalProps) =
                     <SelectValue placeholder="Backlog (No Sprint)" />
                   </SelectTrigger>
                   <SelectContent>
-                    {sprints.map((sprint) => (
+                    {sprintList.map((sprint: Sprint) => (
                       <SelectItem key={sprint.id} value={sprint.id}>
                         {sprint.name}
                       </SelectItem>

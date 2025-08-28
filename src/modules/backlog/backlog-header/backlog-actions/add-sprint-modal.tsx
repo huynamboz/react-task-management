@@ -9,7 +9,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { IconCalendar } from "@tabler/icons-react";
-import { useProjectStore, type Sprint } from "@/modules/backlog/store";
+import { useBacklogListDispatch } from "@/modules/backlog/backlog-store";
+import type { Sprint } from "@/modules/backlog/backlog-store";
 import { useForm } from "react-hook-form";
 import { axiosClient, queryClient } from "@/shared/query-client";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -27,7 +28,7 @@ type FormValues = {
 };
 
 export const AddSprintModal = ({ isOpen, onClose }: AddSprintModalProps) => {
-  const { dispatch } = useProjectStore();
+  const dispatch = useBacklogListDispatch();
 
   const createSprint = useMutation({
     mutationFn: async (sprint: Omit<Sprint, 'id'>) => {
