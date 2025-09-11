@@ -67,6 +67,7 @@ export type ApiClientConfig = {
   paramsSerializer?: ParamsSerializerOptions | CustomParamsSerializer;
   data?: unknown;
 };
+
 export const apiClient = {
   request<T>(config: ApiClientConfig): Promise<AxiosResponse<T>> {
     return axiosClient.request<T>(config);
