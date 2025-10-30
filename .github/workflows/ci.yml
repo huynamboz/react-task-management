@@ -30,6 +30,7 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     name: Notify
+    needs: [unit_test]
     steps:
           - name: echo
             run: echo "hello world"
