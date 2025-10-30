@@ -15,7 +15,7 @@ jobs:
       - name: echo
         run: echo "hello world"
   unit_test:
-    run_on: ubuntu-latest
+    runs_on: ubuntu-latest
     name: unit_test
     steps:
       - uses: actions/checkout@v5
