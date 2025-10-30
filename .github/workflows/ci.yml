@@ -26,3 +26,10 @@ jobs:
           node-version: ${{ env.NODE_ENV }}
       - name: test
         run: npm run lint
+
+  notify:
+    runs-on: ubuntu-latest
+    name: Notify
+    steps:
+          - name: echo
+            run: echo "hello world"
