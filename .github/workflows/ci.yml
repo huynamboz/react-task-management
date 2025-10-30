@@ -2,7 +2,7 @@ name: Ci workflow
 
 on:
   push:
-    branchs:
+    branches:
       - main
 
 env:
@@ -17,7 +17,7 @@ jobs:
         run: echo "hello world"
 
   unit_test:
-    runs_on: ubuntu-latest
+    runs-on: ubuntu-latest
     name: unit test
     steps:
       - uses: actions/checkout@v5
